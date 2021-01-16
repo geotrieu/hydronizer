@@ -65,7 +65,7 @@ void loop() {
   hydro_id[16] = '\0';
   Serial.println();
 
-  int weight = random(300,500);
+  int weight = 500;
   
   if (mqtt.connected()) {
     Serial.println(hydro_id);
