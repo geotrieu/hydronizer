@@ -32,10 +32,12 @@ def create_entry(message_id, time_sent, weight):
     type(global_conn)
     with global_conn.cursor() as cur:
         cur.execute(
-            "CREATE TABLE IF NOT EXISTS water_breaks (id INT PRIMARY KEY, time INT, quantity INT)"
+            "CREATE TABLE IF NOT EXISTS water_breaks (id SERIAL PRIMARY KEY, deviceID STRING, date DATE, time TIME, quantity INT)"
         )
-        command = "UPSERT INTO water_breaks (id, time, quantity) VALUES ({}, {}, {})".format(message_id, "'hello'", weight)
-        cur.execute(command)
+        command = "INSERT INTO water_breaks (deviceID, date, time, quantity) VALUES (%s, %s, %s, %s)"
+        formatted_date = datetime.now().strftime('%Y-%m-%d')
+        formatted_time = datetime.now().strftime('%H:%M:%S')
+        cur.execute(command, (message_id, formatted_date, formatted_time, weight))
         logging.debug("create_entry(): status message: %s", cur.statusmessage)
     global_conn.commit()
 
@@ -79,7 +81,7 @@ def main():
 
     with conn.cursor() as cur:
         cur.execute(
-            "CREATE TABLE IF NOT EXISTS water_breaks (id INT PRIMARY KEY, time INT, quantity INT)"
+            "CREATE TABLE IF NOT EXISTS water_breaks (id SERIAL PRIMARY KEY, deviceID STRING, date DATE, time TIME, quantity INT)"
         )
     conn.commit()
 
@@ -89,20 +91,20 @@ def main():
     client.on_message=on_message #attach function to callback
     print("connecting to broker")
     client.connect(broker_address) #connect to broker
-    client.loop_start() #start the loop
     print("Subscribing to topic","hydronizer/reports")
     client.subscribe("hydronizer/reports")
-    print("Publishing message to topic","hydronizer/reports")
-    client.publish("hydronizer/reports",'{"id":"5843862085612977","weight":500}')
-    time.sleep(20) # wait
-    client.loop_stop() #stop the loop
+    client.loop_forever()
+    #print("Publishing message to topic","hydronizer/reports")
+    #client.publish("hydronizer/reports",'{"id":"5843862085612977","weight":500}')
+    #time.sleep(20) # wait
+    #client.loop_stop() #stop the loop
 
-    print_breaks(conn)
+    #print_breaks(conn)
 
-    delete_entries(conn)
+    #delete_entries(conn)
 
     # Close communication with the database.
-    conn.close()
+    #conn.close()
 
 
 def parse_cmdline():
