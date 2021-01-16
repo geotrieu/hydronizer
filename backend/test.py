@@ -1,10 +1,24 @@
-#!/usr/bin/env python3
+import paho.mqtt.client as mqtt #import the client1
+import time
 
-import paho.mqtt.client as mqtt
+############
+def on_message(client, userdata, message):
+    print("message received " ,str(message.payload.decode("utf-8")))
+    print("message topic=",message.topic)
+    print("message qos=",message.qos)
+    print("message retain flag=",message.retain)
+########################################
 
-# This is the Publisher
-
-client = mqtt.Client()
-client.connect("35.227.82.239",1883,60)
-client.publish("topic/test", "Hello world!")
-client.disconnect()
+broker_address="35.227.82.239"
+print("creating new instance")
+client = mqtt.Client("P1") #create new instance
+client.on_message=on_message #attach function to callback
+print("connecting to broker")
+client.connect(broker_address) #connect to broker
+client.loop_start() #start the loop
+print("Subscribing to topic","hydronizer/reports")
+client.subscribe("hydronizer/reports")
+print("Publishing message to topic","hydronizer/reports")
+client.publish("house/bulbs/bulb1","Test")
+time.sleep(10) # wait
+client.loop_stop() #stop the loop
