@@ -8,11 +8,17 @@ const char* mqttPassword = "";
 
 #include <SPI.h>
 #include <MFRC522.h>
+#include <Wire.h> 
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 #include "Adafruit_MQTT.h" 
 #include "Adafruit_MQTT_Client.h"
  
-#define RST_PIN 22
-#define SS_PIN 21
+#define RST_PIN 5
+#define SS_PIN 4
+
+#define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
+Adafruit_SSD1306 display(128, 64, &Wire, OLED_RESET);
  
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 MFRC522::StatusCode status;
@@ -31,6 +37,20 @@ void setup() {
   
   SPI.begin();
   mfrc522.PCD_Init();
+
+  // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;); // Don't proceed, loop forever
+  }
+
+  // Show initial display buffer contents on the screen --
+  // the library initializes this with an Adafruit splash screen.
+  display.display();
+  delay(1000);
+
+  display.clearDisplay();
+  display.display();
 
   connectWifi();
   
@@ -77,9 +97,24 @@ void loop() {
     char resultChar[result.length()];
     result.toCharArray(resultChar, result.length() + 1);
     Serial.println(resultChar);
+    oledDrawText(hydro_id);
+    display.drawPixel(10, 10, WHITE);
     mqtt_reports.publish(resultChar);
   }
 
   mfrc522.PICC_HaltA();
  
+}
+
+void oledDrawText(String text) {
+  display.clearDisplay();
+  display.setTextSize(1);      // Normal 1:1 pixel scale
+  display.setTextColor(WHITE); // Draw white text
+  display.setCursor(0, 0);     // Start at top-left corner
+  display.cp437(true);         // Use full 256 char 'Code Page 437' font
+
+  for(int i=0; i<text.length(); i++) {
+    display.write(text[i]);
+  }
+  display.display();
 }

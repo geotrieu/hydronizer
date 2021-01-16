@@ -1,6 +1,10 @@
 # Firmware
 connection.h*
 
+# Cockroach
+cockroach\
+*.zip
+
 # Logs
 logs
 *.log
