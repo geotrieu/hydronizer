@@ -1,10 +1,10 @@
 #include <SPI.h>
 #include <MFRC522.h>
  
-#define RST_PIN         22           // Configurable, see typical pin layout above
-#define SS_PIN          21           // Configurable, see typical pin layout above
+#define RST_PIN 22
+#define SS_PIN 21
  
-MFRC522 mfrc522(SS_PIN, RST_PIN);   // Create MFRC522 instance
+MFRC522 mfrc522(SS_PIN, RST_PIN);
 MFRC522::StatusCode status;
 
 String input;
@@ -15,9 +15,9 @@ byte size = sizeof(buffer);
 uint8_t pageAddr = 0x06; // Write to page 6
 
 void setup() {
-  Serial.begin(115200);        // Initialize serial communications with the PC
-  SPI.begin();                 // Init SPI bus
-  mfrc522.PCD_Init();          // Init MFRC522 card
+  Serial.begin(115200);
+  SPI.begin();
+  mfrc522.PCD_Init();
   Serial.println(F("Please enter a 16-digit code to write to the card"));
 }
 
