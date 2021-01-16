@@ -3,6 +3,7 @@ import time
 import random
 import logging
 import json
+import random
 from datetime import datetime
 from argparse import ArgumentParser, RawTextHelpFormatter
 
@@ -34,10 +35,11 @@ def create_entry(message_id, time_sent, weight):
         cur.execute(
             "CREATE TABLE IF NOT EXISTS water_breaks (id SERIAL PRIMARY KEY, deviceID STRING, date DATE, time TIME, quantity INT)"
         )
+        quantity = getQuantity()
         command = "INSERT INTO water_breaks (deviceID, date, time, quantity) VALUES (%s, %s, %s, %s)"
         formatted_date = datetime.now().strftime('%Y-%m-%d')
         formatted_time = datetime.now().strftime('%H:%M:%S')
-        cur.execute(command, (message_id, formatted_date, formatted_time, weight))
+        cur.execute(command, (message_id, formatted_date, formatted_time, quantity))
         logging.debug("create_entry(): status message: %s", cur.statusmessage)
     global_conn.commit()
 
@@ -70,6 +72,17 @@ def test_retry_loop(conn):
         cur.execute("SELECT now()")
         cur.execute("SELECT crdb_internal.force_retry('1s'::INTERVAL)")
     logging.debug("test_retry_loop(): status message: %s", cur.statusmessage)
+
+def getQuantity():
+    type(global_conn)
+    with global_conn.cursor() as cur:
+        cur.execute(
+            "SELECT * FROM water_breaks WHERE deviceid = '54kilrgk5x909u4n' ORDER BY id DESC LIMIT 1;"
+        )
+        rows = cur.fetchall()
+        lastQuantity = int(rows[0][4])
+        return lastQuantity - random.randrange(30,51)
+    global_conn.commit()
 
 
 def main():
