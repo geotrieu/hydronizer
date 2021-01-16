@@ -11,7 +11,7 @@ def on_message(client, userdata, message):
 
 broker_address="35.227.82.239"
 print("creating new instance")
-client = mqtt.Client("P1") #create new instance
+client = mqtt.Client("Test") #create new instance
 client.on_message=on_message #attach function to callback
 print("connecting to broker")
 client.connect(broker_address) #connect to broker
@@ -19,6 +19,6 @@ client.loop_start() #start the loop
 print("Subscribing to topic","hydronizer/reports")
 client.subscribe("hydronizer/reports")
 print("Publishing message to topic","hydronizer/reports")
-client.publish("house/bulbs/bulb1","Test")
-time.sleep(10) # wait
+client.publish("hydronizer/reports","Test")
+time.sleep(1000) # wait
 client.loop_stop() #stop the loop
