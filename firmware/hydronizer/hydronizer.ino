@@ -1,7 +1,15 @@
 #include "WiFi.h"
+#include "./connection.h" // Connection file containing connection details (SSID, PW)
+
+const char* mqttServer = MQTT_SERVER;
+const int mqttPort = 1883;        
+#define MQTTUSERNAME ""
+const char* mqttPassword = "";
 
 #include <SPI.h>
 #include <MFRC522.h>
+#include "Adafruit_MQTT.h" 
+#include "Adafruit_MQTT_Client.h"
  
 #define RST_PIN 22
 #define SS_PIN 21
@@ -9,7 +17,11 @@
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 MFRC522::StatusCode status;
 
-byte buffer[18];  // Buffer (16+2 Bytes: Data + CRC)
+WiFiClient client; 
+Adafruit_MQTT_Client mqtt(&client, mqttServer, mqttPort, MQTTUSERNAME, mqttPassword);
+Adafruit_MQTT_Publish mqtt_reports = Adafruit_MQTT_Publish(&mqtt, MQTTUSERNAME "hydronizer/reports");
+
+byte buffer[18];
 byte size = sizeof(buffer);
 
 uint8_t pageAddr = 0x06;  // Read from page 6  
@@ -26,6 +38,11 @@ void setup() {
 }
 
 void loop() {
+  if (!mqtt.connected())  // Reconnect if connection is lost
+  {
+    connectWifi();
+  }
+  
   while (!mfrc522.PICC_IsNewCardPresent() || !mfrc522.PICC_ReadCardSerial()) {
     delay(50);
   }
@@ -40,11 +57,28 @@ void loop() {
   }
 
   Serial.print(F("Readed data: "));
-  //Dump a byte array to Serial
-  for (byte i = 0; i < 16; i++) {
-    Serial.write(buffer[i]);
+  char hydro_id[17];
+  for (int i = 0; i < 16; i++) {
+    hydro_id[i] = (char) buffer[i];
+    Serial.print(hydro_id[i]);
   }
+  hydro_id[16] = '\0';
   Serial.println();
+
+  int weight = random(300,500);
+  
+  if (mqtt.connected()) {
+    Serial.println(hydro_id);
+    String result = "{\"id\":\"";
+    result += hydro_id;
+    result += "\",\"weight\":";
+    result += weight;
+    result += "}";
+    char resultChar[result.length()];
+    result.toCharArray(resultChar, result.length() + 1);
+    Serial.println(resultChar);
+    mqtt_reports.publish(resultChar);
+  }
 
   mfrc522.PICC_HaltA();
  
