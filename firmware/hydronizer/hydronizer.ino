@@ -125,7 +125,7 @@ void loop() {
   } else {
     counter++;
   }
-  delay(100);
+  delay(50);
 }
 
 void resetTimer() {
