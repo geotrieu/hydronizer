@@ -88,7 +88,7 @@ def update_user_timer():
 ########################################
 
 if __name__ == "__main__":
-    api.run()
+    api.run(host='0.0.0.0')
     db.create_table_if_not_exist()
     db.create_table_if_not_exist()
     db.create_user_table_if_not_exist()
