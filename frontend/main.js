@@ -1,3 +1,5 @@
+const serverAddress = "http://35.185.60.243:5000";
+
 let t = 30 * 60;
 
 function setTime() {
@@ -24,17 +26,17 @@ const countdown = document.getElementById('countdown');
 
 
 function getLastWaterBreak() {
-    return fetch(`http://localhost:5000/lastwaterbreak?deviceid=${device}`);
+    return fetch(`${serverAddress}/lastwaterbreak?deviceid=${device}`);
 }
 
 function getTimeToDrink() {
-    return fetch(`http://localhost:5000/userTimer?deviceid=${device}`);
+    return fetch(`${serverAddress}/userTimer?deviceid=${device}`);
 }
 
 async function calculateTimeToDrink() {
     let res = await getTimeToDrink();
     let data = await res.json();
-    return data.time;
+    return data.timer;
 }
 
 async function calculateTime() {
@@ -56,8 +58,10 @@ async function updateCountdown() {
     let elapsedTimeSinceDrink = await calculateTime();
     if (elapsedTimeSinceDrink != -1) { // message changed
         let timeToDrink = await calculateTimeToDrink();
+        if (timeToDrink == null) return currentMessageId = 0;
         t = timeToDrink - elapsedTimeSinceDrink;
     }
+    console.log(t);
     if (t <= 0) {
         t = 0;
         chrome.tabs.executeScript({
