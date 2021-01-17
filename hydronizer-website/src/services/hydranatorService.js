@@ -1,5 +1,9 @@
 const axios = require('axios');
 
-export default function getLastWaterBreak() {
-    return axios.get('http://localhost:5000/lastwaterbreak');
+export function getWaterLeft(device) {
+    return axios.get('http://localhost:5000/lastwaterbreak?deviceid=' + device);
+}
+
+export function getMetrics(device) {
+    return axios.get('http://localhost:5000/metrics?deviceid=' + device);
 }
