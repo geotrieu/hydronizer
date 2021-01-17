@@ -33,6 +33,10 @@ function getTimeToDrink() {
     return fetch(`${serverAddress}/userTimer?deviceid=${device}`);
 }
 
+function setTimeToDrink() {
+    
+}
+
 async function calculateTimeToDrink() {
     let res = await getTimeToDrink();
     let data = await res.json();

@@ -1,14 +1,14 @@
 body {
     background-color: #f4f1f1;
     overflow: hidden;
+    margin-left: 30px;
+    margin-right: 30px;
 }
 .h1Tag {
     text-align: center;
     color: black;
     font-size: 20px;
-    
 }
-
 
 /*input {
     font-size: 15px;
@@ -16,19 +16,14 @@ body {
     height: 30px;
 }*/
 
-
 /*form {
     padding-top: 30px;
 } */
 
-
 .text1 {
-    position: relative;
-    left: -148px;
     width: 300px;
-    padding: 150px;
     font-size: 25px;
-    top: -40px;
+    text-align: center;
 }
 
 /* .time {
@@ -39,7 +34,6 @@ body {
 } */
 
 .frequency-button {
-    position: absolute;
     left: 60px;
     width: 300px;
     height: 80px;
@@ -47,9 +41,9 @@ body {
     font-size: 20px;
     border: none;
     border-radius: 20px;
-    background-color:#c8e6f9;
-    top: 650px;
+    background-color: #c8e6f9;
     font-family: "Segoe UI", Tahoma, sans-serif;
+    margin-top: 20px;
 }
 
 .frequency-button:hover {
@@ -57,11 +51,11 @@ body {
 }
 
 .logo {
-    position: absolute;
+    display: block;
     width: 100px;
     height: 100px;
-    left: 165px;
-    top: 320px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .box {
@@ -69,18 +63,18 @@ body {
     height: 450px;
     padding: 10px;
     margin-top: 50px;
-    margin-left: 40px;
 }
 
 #countdown {
-    position: relative;
     font-size: 60px;
     left: 140px;
-    top: 450px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    text-align: center;
 }
 
 .userIn li {
     display: inline;
-    float:left;
+    float: left;
     padding: 1px;
 }

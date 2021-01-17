@@ -8,8 +8,6 @@
     </head>
     <body> 
         <div>
-            <p id="countdown"></p>
-            <script src="main.js"></script>
             <div class="h1Tag"> 
                 <h1>HYDRONIZER</h1>
             </div>
@@ -24,23 +22,27 @@
                 </form> 
             </div> -->
 
-        <div class="box">
-            <p class="text1">
-                Time until next water break
-            </p>           
-            <img class="logo" src="image1.png">
-            <ul class="userIn">
-                <li><input type="number" id="hours" min="0" max="23"></li>
-                <li><small>hours</small></li>
-                <li><input type="number" id="minutes" min="0" max="59"></li>
-                <li><small>minutes</small></li>
-            </ul>
-            <button id="set" type="button" class="frequency-button">
-                Set Water Break Frequency 
-            </button>
-                 
-
-            <!-- <p class="time">05:19</p>   -->
+            <div class="box">
+                <img class="logo" src="image1.png">
+                <p class="text1">
+                    Time until next water break
+                </p>           
+                <p id="countdown">--:--</p>
+                <div class="settings">
+                    <ul class="userIn">
+                        <li><input type="number" id="hours" min="0" max="23"></li>
+                        <li><small>hours</small></li>
+                        <li><input type="number" id="minutes" min="0" max="59"></li>
+                        <li><small>minutes</small></li>
+                    </ul>
+                </div>
+                <button id="set" type="button" class="frequency-button">
+                    Set Water Break Frequency 
+                </button>
+                    
+                <script src="main.js"></script>
+                <!-- <p class="time">05:19</p>   -->
+            </div>
         </div>
     </body>
 </html>
