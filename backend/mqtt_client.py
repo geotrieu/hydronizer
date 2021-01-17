@@ -36,7 +36,7 @@ def parse_cmdline():
     return opt
 
 #opt = parse_cmdline()
-logging.basicConfig(level=logging.DEBUG if opt.verbose else logging.INFO)
+#logging.basicConfig(level=logging.DEBUG if opt.verbose else logging.INFO)
 #conn = psycopg2.connect(opt.dsn)
 conn = psycopg2.connect(
     host="34.75.115.219",
