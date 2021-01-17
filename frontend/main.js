@@ -61,7 +61,7 @@ async function getDeviceName() {
 async function calculateTime() {
     let res = await getLastWaterBreak();
     let data = await res.json();
-    if (data.message_id == currentMessageId) return -1;
+    if (data.message_id == currentMessageId) return -100;
     let date = data.date;
     let time = data.time;
     let dateTime = Date.parse(date + " " + time);
@@ -75,7 +75,7 @@ setInterval(updateCountdown, 1000);
 
 async function updateCountdown() {
     let elapsedTimeSinceDrink = await calculateTime();
-    if (elapsedTimeSinceDrink != -1) { // message changed
+    if (elapsedTimeSinceDrink != -100) { // message changed
         let timeToDrink = await calculateTimeToDrink();
         if (timeToDrink == null) return currentMessageId = 0;
         t = timeToDrink - elapsedTimeSinceDrink;
