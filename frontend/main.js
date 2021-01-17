@@ -13,11 +13,11 @@ function setTime() {
 
 const el = document.getElementById("set")
 if (el){
-    el.addEventListener('click', setTime);
+    el.addEventListener('click', setTimeToDrink);
 }
 
 
-const device = 5843862085612977;
+const device = "5843862085612977";
 
 let currentMessageId = 0;
 let blurred = false;
@@ -33,14 +33,29 @@ function getTimeToDrink() {
     return fetch(`${serverAddress}/userTimer?deviceid=${device}`);
 }
 
-function setTimeToDrink() {
-    
+async function setTimeToDrink() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', `${serverAddress}/postNewTime`);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+
+    let deviceName = await getDeviceName();
+    let minutes = document.getElementById("minutes").value;
+    let seconds = document.getElementById("seconds").value;
+
+    xhr.send(JSON.stringify({"device_id": device, "device_name": deviceName, "new_time": minutes*60 + seconds}));
+    currentMessageId = 0;
 }
 
 async function calculateTimeToDrink() {
     let res = await getTimeToDrink();
     let data = await res.json();
     return data.timer;
+}
+
+async function getDeviceName() {
+    let res = await getTimeToDrink();
+    let data = await res.json();
+    return data.device_name;
 }
 
 async function calculateTime() {
@@ -65,7 +80,6 @@ async function updateCountdown() {
         if (timeToDrink == null) return currentMessageId = 0;
         t = timeToDrink - elapsedTimeSinceDrink;
     }
-    console.log(t);
     if (t <= 0) {
         t = 0;
         chrome.tabs.executeScript({
