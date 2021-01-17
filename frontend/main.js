@@ -40,12 +40,12 @@ async function updateCountdown() {
     if (elapsedTimeSinceDrink != -1) { // use cached message, message never changed
         t = start * 60 - elapsedTimeSinceDrink;
     }
-    if (t < 0) {
+    if (t <= 0) {
         t = 0;
-        alert("DRINK");
         chrome.tabs.executeScript({
             code: 'document.getElementsByTagName("BODY")[0].style.filter = "blur(10px)"'
         });
+        alert("DRINK");
     }
     const m = Math.floor(t/60);
 
