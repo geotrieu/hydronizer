@@ -15,10 +15,10 @@ from psycopg2.errors import SerializationFailure
 def create_accounts(conn):
     with conn.cursor() as cur:
         cur.execute(
-            "CREATE TABLE IF NOT EXISTS accounts (id INT PRIMARY KEY, balance INT)"
+            "CREATE TABLE IF NOT EXISTS water_breaks (id INT PRIMARY KEY, time INT, quantity INT)"
         )
-        cur.execute("UPSERT INTO accounts (id, balance) VALUES (1, 1000), (2, 250)")
-        logging.debug("create_accounts(): status message: %s", cur.statusmessage)
+        cur.execute("UPSERT INTO water_breaks (id, time, quantity) VALUES (1, 2, 3)")
+        logging.debug("create_entry(): status message: %s", cur.statusmessage)
     conn.commit()
 
 
@@ -29,76 +29,15 @@ def delete_accounts(conn):
     conn.commit()
 
 
-def print_balances(conn):
+def print_breaks(conn):
     with conn.cursor() as cur:
-        cur.execute("SELECT id, balance FROM accounts")
-        logging.debug("print_balances(): status message: %s", cur.statusmessage)
+        cur.execute("SELECT id, balance FROM water_breaks")
+        logging.debug("print_breaks(): status message: %s", cur.statusmessage)
         rows = cur.fetchall()
         conn.commit()
-        print(f"Balances at {time.asctime()}:")
+        print(f"Breaks at {time.asctime()}:")
         for row in rows:
             print(row)
-
-
-def transfer_funds(conn, frm, to, amount):
-    with conn.cursor() as cur:
-
-        # Check the current balance.
-        cur.execute("SELECT balance FROM accounts WHERE id = %s", (frm,))
-        from_balance = cur.fetchone()[0]
-        if from_balance < amount:
-            raise RuntimeError(
-                f"Insufficient funds in {frm}: have {from_balance}, need {amount}"
-            )
-
-        # Perform the transfer.
-        cur.execute(
-            "UPDATE accounts SET balance = balance - %s WHERE id = %s", (amount, frm)
-        )
-        cur.execute(
-            "UPDATE accounts SET balance = balance + %s WHERE id = %s", (amount, to)
-        )
-
-    conn.commit()
-    logging.debug("transfer_funds(): status message: %s", cur.statusmessage)
-
-
-def run_transaction(conn, op, max_retries=3):
-    """
-    Execute the operation *op(conn)* retrying serialization failure.
-
-    If the database returns an error asking to retry the transaction, retry it
-    *max_retries* times before giving up (and propagate it).
-    """
-    # leaving this block the transaction will commit or rollback
-    # (if leaving with an exception)
-    with conn:
-        for retry in range(1, max_retries + 1):
-            try:
-                op(conn)
-
-                # If we reach this point, we were able to commit, so we break
-                # from the retry loop.
-                return
-
-            except SerializationFailure as e:
-                # This is a retry error, so we roll back the current
-                # transaction and sleep for a bit before retrying. The
-                # sleep time increases for each failed transaction.
-                logging.debug("got error: %s", e)
-                conn.rollback()
-                logging.debug("EXECUTE SERIALIZATION_FAILURE BRANCH")
-                sleep_ms = (2 ** retry) * 0.1 * (random.random() + 0.5)
-                logging.debug("Sleeping %s seconds", sleep_ms)
-                time.sleep(sleep_ms)
-
-            except psycopg2.Error as e:
-                logging.debug("got error: %s", e)
-                logging.debug("EXECUTE NON-SERIALIZATION_FAILURE BRANCH")
-                raise e
-
-        raise ValueError(f"Transaction did not succeed after {max_retries} retries")
-
 
 def test_retry_loop(conn):
     """

@@ -40,11 +40,11 @@ class InfoSection extends Component {
                     <h2>of Water Drank Today</h2>
                 </div>
                 <div className="Info">
-                    <small> The human body is 60% water,
+                    <medium> The human body is 60% water,
                         so it's important to stay
                         hydrated. Health experts
                         recommend a daily liquid
-                        consumption of 2 litres per day</small>
+                        consumption of 2 litres per day</medium>
                 </div>
                 <div className="Dashboard">
                     <h2>Your Water Statistics</h2>
@@ -55,7 +55,7 @@ class InfoSection extends Component {
                     <h3>Water Left in Water Bottle</h3>
                     <small>{waterLeft} mL</small>
                 </div>
-                <div className="Image-3"><img src={img3} alt="Bottle"/></div>
+                
                 <div className="Image-4"><img src={img4} alt="Bottle"/></div>
             </div>
         )
