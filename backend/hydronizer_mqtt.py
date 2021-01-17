@@ -12,6 +12,9 @@ def on_message(client, userdata, message):
     curr_time = now.strftime("%H:%M:%S")
     weight = data['weight']
 
+    username = db.get_user_name(message_id)
+    settings.mqtt.publish("hydronizer/user", username)
+
     db.create_entry(message_id, curr_time, weight)
     print("message received ", str(message.payload.decode("utf-8")))
     print("message topic=", message.topic)

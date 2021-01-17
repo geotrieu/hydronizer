@@ -28,12 +28,14 @@ MFRC522::StatusCode status;
 WiFiClient client; 
 Adafruit_MQTT_Client mqtt(&client, mqttServer, mqttPort, MQTTUSERNAME, mqttPassword);
 Adafruit_MQTT_Publish mqtt_reports = Adafruit_MQTT_Publish(&mqtt, MQTTUSERNAME "hydronizer/reports");
+Adafruit_MQTT_Subscribe mqtt_users = Adafruit_MQTT_Subscribe(&mqtt, MQTTUSERNAME "hydronizer/user");
 
 byte buffer[18];
 byte size = sizeof(buffer);
 
 int timer = 0;
 int counter = 1;
+String deviceName = "";
 
 uint8_t pageAddr = 0x06;  // Read from page 6  
 
@@ -58,6 +60,8 @@ void setup() {
   display.display();
 
   connectWifi();
+
+  mqtt.subscribe(&mqtt_users);
   
   Serial.println(F("Read data from MIFARE"));
 }
@@ -101,11 +105,20 @@ void loop() {
       Serial.println(resultChar);
       resetTimer();
       mqtt_reports.publish(resultChar);
+
+      if (hydro_id[1] == '8') {
+        deviceName == "Bottle";
+      } else if (hydro_id[1] == '4') {
+        deviceName == "Mug";
+      } else {
+        Serial.println(hydro_id[1]);
+        deviceName == "";
+      }
     }
   
     mfrc522.PICC_HaltA();
   }
-  oledDrawText(getTimer());
+  oledDrawText(getTimer(), deviceName);
   if (counter >= 10) {
     if (timer > 0) timer--;
     counter = 1;
@@ -134,7 +147,7 @@ String getTimer() {
   return ret;
 }
 
-void oledDrawText(String text) {
+void oledDrawText(String text, String bottom) {
   display.clearDisplay();
   display.setTextSize(4);
   display.setTextColor(WHITE);
@@ -144,5 +157,12 @@ void oledDrawText(String text) {
   for(int i=0; i<text.length(); i++) {
     display.write(text[i]);
   }
+
+  display.setCursor(0, 32);
+  for(int i=0; i<bottom.length(); i++) {
+    display.write(bottom[i]);
+  }
+
+  
   display.display();
 }

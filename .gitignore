@@ -1,6 +1,8 @@
 # Firmware
 connection.h*
 
+__pycache__\
+
 # Cockroach
 cockroach\
 *.zip

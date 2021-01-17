@@ -41,6 +41,22 @@ def create_user(device_id, device_name, new_time):
         )      
     conn.commit()
 
+def get_user_name(device_id):
+    create_user_table_if_not_exist()
+    with conn.cursor() as cur:
+        cur.execute(
+            "SELECT * FROM users WHERE deviceid = '" + device_id + "';"
+        )
+        rows = cur.fetchall()
+
+        if len(rows) == 0:
+            print(rows)
+            create_user(device_id, device_id, 1800)
+            return str(device_id)
+
+        return str(rows[0][1])
+    conn.commit()
+
 def get_user_time(device_id):
     create_user_table_if_not_exist()
     with conn.cursor() as cur:
