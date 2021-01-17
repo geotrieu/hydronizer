@@ -141,8 +141,8 @@ def getMetrics(device_id):
     global_conn.commit()
 
     total_today = 0
-    if num > 0:
-        total_today = data_today[0][4] - data_today[num - 1][4]
+    for row in data_today:
+        total_today += row[4]
     
 
     DAILY_RECOMMENDED = 2000
