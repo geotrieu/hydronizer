@@ -35,14 +35,9 @@ def parse_cmdline():
     opt = parser.parse_args()
     return opt
 
-#opt = parse_cmdline()
+opt = parse_cmdline()
 #logging.basicConfig(level=logging.DEBUG if opt.verbose else logging.INFO)
-#conn = psycopg2.connect(opt.dsn)
-conn = psycopg2.connect(
-    host="34.75.115.219",
-    database="postgres",
-    user="postgres",
-    password="cockroach123")
+conn = psycopg2.connect(opt.dsn)
     
 settings.global_conn = conn
 
