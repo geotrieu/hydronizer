@@ -7,6 +7,7 @@ import random
 from datetime import datetime
 from argparse import ArgumentParser, RawTextHelpFormatter
 from flask import Flask, json
+from flask_cors import CORS, cross_origin
 
 import psycopg2
 from psycopg2.errors import SerializationFailure
@@ -14,6 +15,7 @@ from psycopg2.errors import SerializationFailure
 import threading
 
 api = Flask(__name__)
+CORS(api)
 global_conn = None
 
 #######################################
@@ -115,6 +117,7 @@ def getLastEntry():
 def main():
     opt = parse_cmdline()
     logging.basicConfig(level=logging.DEBUG if opt.verbose else logging.INFO)
+    logging.getLogger('flask_cors').level = logging.DEBUG
     conn = psycopg2.connect(opt.dsn)
     global global_conn
     global_conn = conn
