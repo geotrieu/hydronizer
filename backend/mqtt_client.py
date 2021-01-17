@@ -44,7 +44,7 @@ def create_entry(message_id, time_sent, weight):
         cur.execute(
             "CREATE TABLE IF NOT EXISTS water_breaks (id SERIAL PRIMARY KEY, deviceID STRING, date DATE, time TIME, quantity INT)"
         )
-        quantity = getQuantity()
+        quantity = getQuantity(message_id)
         command = "INSERT INTO water_breaks (deviceID, date, time, quantity) VALUES (%s, %s, %s, %s)"
         formatted_date = datetime.now().strftime('%Y-%m-%d')
         formatted_time = datetime.now().strftime('%H:%M:%S')
@@ -82,10 +82,10 @@ def test_retry_loop(conn):
         cur.execute("SELECT crdb_internal.force_retry('1s'::INTERVAL)")
     logging.debug("test_retry_loop(): status message: %s", cur.statusmessage)
 
-def getQuantity():
+def getQuantity(device):
     with global_conn.cursor() as cur:
         cur.execute(
-            "SELECT * FROM water_breaks WHERE deviceid = '54kilrgk5x909u4n' ORDER BY id DESC LIMIT 1;"
+            "SELECT * FROM water_breaks WHERE deviceid = '" + device +"' ORDER BY id DESC LIMIT 1;"
         )
         rows = cur.fetchall()
         lastQuantity = int(rows[0][4])
@@ -133,7 +133,7 @@ def main():
     client.connect(broker_address) #connect to broker
     print("Subscribing to topic","hydronizer/reports")
     client.subscribe("hydronizer/reports")
-    #client.loop_forever()
+    client.loop_forever()
     #print("Publishing message to topic","hydronizer/reports")
     #client.publish("hydronizer/reports",'{"id":"5843862085612977","weight":500}')
     time.sleep(30) # wait
