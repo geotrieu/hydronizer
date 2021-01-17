@@ -46,11 +46,12 @@ def get_quantity(device):
         return lastQuantity - random.randrange(30,51)
     conn.commit()
 
-def get_last_entry():
+def get_last_entry(device_id):
     with conn.cursor() as cur:
-        cur.execute(
-            "SELECT * FROM water_breaks ORDER BY ID DESC LIMIT 1"
-        )
+        command = "SELECT * FROM water_breaks WHERE deviceid = '{}' ORDER BY id DESC LIMIT 1;".format(device_id)
+        print(type(command))
+        print(command)
+        cur.execute(command)
         row = cur.fetchall()[0]
 
         last_entry = {
@@ -65,3 +66,44 @@ def get_last_entry():
         print(type(last_entry))
     conn.commit()
     return last_entry
+
+def get_metrics_db(device_id):
+    # returns number of sips from today, total water consumed, average, amount of water you need to 
+    with conn.cursor() as cur:
+        formatted_date = datetime.now().strftime('%Y-%m-%d')
+        command = "select * from water_breaks where deviceid = '{}' AND date = '{}' order by time ASC;".format(device_id, formatted_date)
+        cur.execute(command)
+        data_today = cur.fetchall()
+        print(data_today)
+        print(type(data_today))
+        num = len(data_today)
+        print(num)
+    conn.commit()
+
+    total_today = 0
+    for row in data_today:
+        total_today += row[4]
+    
+
+    DAILY_RECOMMENDED = 2000
+    amount_left = DAILY_RECOMMENDED - total_today
+    if amount_left < 0:
+        amount_left = 0
+    
+    with conn.cursor() as cur:
+        command = "select * from water_breaks where deviceid = '{}';".format(device_id)
+        cur.execute(command)
+        all_data = cur.fetchall()
+        total_consumed = 0
+        for row in all_data:
+            total_consumed += row[4]
+    conn.commit()
+
+    metrics = {
+        "number_of_sips": num,
+        "total_consumed_today": total_today,
+        "total_consumed": total_consumed,
+        "amount_left": amount_left
+    }
+
+    return metrics

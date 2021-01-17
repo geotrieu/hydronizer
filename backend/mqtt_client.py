@@ -6,7 +6,8 @@ import random
 import settings
 from datetime import datetime
 from argparse import ArgumentParser, RawTextHelpFormatter
-from flask import Flask, json
+
+from flask import Flask, request, json
 from flask_cors import CORS, cross_origin
 
 import psycopg2
@@ -47,18 +48,21 @@ import hydronizer_mqtt as mqtt
 ########################################
 # GET API for last water break
 @api.route('/lastwaterbreak', methods=['GET'])
-def get_companies():
-  return db.get_last_entry()
+
+def get_last_water_break():
+    device_id = request.args['deviceid']
+    return db.get_last_entry(device_id)
 ########################################
 
-def main():
-    db.create_table_if_not_exist()
-
-    # Close communication with the database.
-    #conn.close()
-
+########################################
+# GET API for metrics
+@api.route('/metrics', methods=['GET'])
+def get_metrics():
+    device_id = request.args['deviceid']
+    return db.get_metrics_db(device_id)
+########################################
 
 if __name__ == "__main__":
-    #main()
+    db.create_table_if_not_exist()
     api.run()
     
