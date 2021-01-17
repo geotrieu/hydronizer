@@ -6,7 +6,7 @@ import json
 import random
 from datetime import datetime
 from argparse import ArgumentParser, RawTextHelpFormatter
-from flask import Flask, json
+from flask import Flask, request, json
 
 import psycopg2
 from psycopg2.errors import SerializationFailure
@@ -35,8 +35,18 @@ def on_message(client, userdata, message):
 ########################################
 # GET API for last water break
 @api.route('/lastwaterbreak', methods=['GET'])
-def get_companies():
-  return json.dumps(getLastEntry())
+def get_last_water_break():
+    device_id = request.args['arg1']
+    return getLastEntry(device_id)
+########################################
+
+
+########################################
+# GET API for metrics
+@api.route('/metrics', methods=['GET'])
+def get_metrics():
+    device_id = request.args['arg1']
+    return getMetrics(device_id)
 ########################################
 
 def create_entry(message_id, time_sent, weight):
@@ -92,11 +102,12 @@ def getQuantity():
         return lastQuantity - random.randrange(30,51)
     global_conn.commit()
 
-def getLastEntry():
+def getLastEntry(device_id):
     with global_conn.cursor() as cur:
-        cur.execute(
-            "SELECT * FROM water_breaks ORDER BY ID DESC LIMIT 1"
-        )
+        command = "SELECT * FROM water_breaks WHERE deviceid = '{}' ORDER BY id DESC LIMIT 1;".format(device_id)
+        print(type(command))
+        print(command)
+        cur.execute(command)
         row = cur.fetchall()[0]
 
         last_entry = {
@@ -112,6 +123,47 @@ def getLastEntry():
     global_conn.commit()
     return last_entry
 
+def getMetrics(device_id):
+    # returns number of sips from today, total water consumed, average, amount of water you need to 
+    with global_conn.cursor() as cur:
+        formatted_date = datetime.now().strftime('%Y-%m-%d')
+        command = "select * from water_breaks where deviceid = '{}' AND date = '{}' order by time ASC;".format(device_id, formatted_date)
+        cur.execute(command)
+        data_today = cur.fetchall()
+        print(data_today)
+        print(type(data_today))
+        num = len(data_today)
+        print(num)
+    global_conn.commit()
+
+    total_today = 0
+    if num > 0:
+        total_today = data_today[0][4] - data_today[num - 1][4]
+    
+
+    DAILY_RECOMMENDED = 2000
+    amount_left = DAILY_RECOMMENDED - total_today
+    if amount_left < 0:
+        amount_left = 0
+    
+    with global_conn.cursor() as cur:
+        command = "select * from water_breaks where deviceid = '{}';".format(device_id)
+        cur.execute(command)
+        all_data = cur.fetchall()
+        total_consumed = 0
+        for row in all_data:
+            total_consumed += row[4]
+    global_conn.commit()
+
+    metrics = {
+        "number_of_sips": num,
+        "total_consumed_today": total_today,
+        "total_consumed": total_consumed,
+        "amount_left": amount_left
+    }
+
+    return metrics
+    
 def main():
     opt = parse_cmdline()
     logging.basicConfig(level=logging.DEBUG if opt.verbose else logging.INFO)
@@ -168,6 +220,4 @@ if __name__ == "__main__":
 
     thread1.start()
     thread2.start()
-    #main()
-    #api.run()
     
