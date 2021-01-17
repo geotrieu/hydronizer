@@ -63,6 +63,6 @@ def get_metrics():
 ########################################
 
 if __name__ == "__main__":
-    db.create_table_if_not_exist()
     api.run()
+    db.create_table_if_not_exist()
     
