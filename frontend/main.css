@@ -1,10 +1,10 @@
 body {
-    background-image: linear-gradient(blue, cyan, #E788D5);
+    background-color: #f4f1f1;
 }
 
 .h1Tag {
     text-align: center;
-    color: white;
+    color: black;
     font-size: 20px;
 }
 
@@ -30,12 +30,12 @@ form {
     top: -40px;
 }
 
-.time {
+/* .time {
     position: relative;
     font-size: 110px;
     left: 22px;
     top: -290px; 
-}
+} */
 
 .frequency-button {
     position: absolute;
@@ -47,7 +47,7 @@ form {
     border: none;
     border-radius: 20px;
     background-color: #70B9EE;
-    top: 490px;
+    top: 650px;
 }
 
 .logo {
@@ -55,7 +55,7 @@ form {
     width: 100px;
     height: 100px;
     left: 165px;
-    top: 150px;
+    top: 320px;
 }
 
 .box {
@@ -66,4 +66,11 @@ form {
     margin-top: 50px;
     margin-left: 40px;
     background-color: #f4f1f1;
+}
+
+#countdown {
+    position: relative;
+    font-size: 60px;
+    left: 140px;
+    top: 450px;
 }
