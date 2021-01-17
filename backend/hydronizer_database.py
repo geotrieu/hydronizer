@@ -6,7 +6,49 @@ conn = __import__('settings').global_conn
 
 def create_table_if_not_exist():
     with conn.cursor() as cur:
-        cur.execute("CREATE TABLE IF NOT EXISTS water_breaks (id SERIAL PRIMARY KEY, deviceID STRING, date DATE, time TIME, quantity INT)")
+        cur.execute("CREATE TABLE IF NOT EXISTS water_breaks (id SERIAL PRIMARY KEY, deviceID STRING, date DATE, time INT, quantity INT)")
+    conn.commit()
+
+def create_user_table_if_not_exist():
+    with conn.cursor() as cur:
+        cur.execute("CREATE TABLE IF NOT EXISTS users (deviceID STRING PRIMARY KEY, deviceName STRING, timer INT)")
+    conn.commit()
+
+def update_time(device_id, device_name, new_time):
+    with conn.cursor() as cur:
+        cur.execute(
+            "SELECT * FROM users WHERE deviceID = '" + device_id + "';"
+        )
+        row = cur.fetchall()          
+    conn.commit()
+
+    if len(row) == 0:
+        with conn.cursor() as cur:
+            cur.execute(
+                "INSERT INTO users (deviceID, deviceName, timer) VALUES ('" + device_id + "', '" + device_name + "', " + str(new_time) + ");"
+            )      
+        conn.commit()
+    else:
+        with conn.cursor() as cur:
+            cur.execute(
+                "UPDATE users SET timer = " + str(new_time) + " WHERE deviceID = '" + device_id + "';"
+            )
+        conn.commit()
+    
+    return {"device_id": device_name, "device_name": device_name, "timer": new_time}
+
+def get_user_time(device_id):
+    with conn.cursor() as cur:
+        cur.execute(
+            "SELECT * FROM users WHERE deviceid = '" + device_id + "';"
+        )
+        row = cur.fetchall()
+
+        if len(row) == 0:
+            return -1
+
+        time = row[1]
+        return time
     conn.commit()
 
 def create_entry(message_id, time_sent, weight):
@@ -71,7 +113,7 @@ def get_metrics_db(device_id):
     # returns number of sips from today, total water consumed, average, amount of water you need to 
     with conn.cursor() as cur:
         formatted_date = datetime.now().strftime('%Y-%m-%d')
-        command = "select * from water_breaks where deviceid = '{}' AND date = '{}' order by time ASC;".format(device_id, formatted_date)
+        command = "SELECT * FROM water_breaks WHERE deviceid = '{}' AND date = '{}' ORDER BY time ASC;".format(device_id, formatted_date)
         cur.execute(command)
         data_today = cur.fetchall()
         print(data_today)
@@ -91,7 +133,7 @@ def get_metrics_db(device_id):
         amount_left = 0
     
     with conn.cursor() as cur:
-        command = "select * from water_breaks where deviceid = '{}';".format(device_id)
+        command = "SELECT * FROM water_breaks WHERE deviceid = '{}';".format(device_id)
         cur.execute(command)
         all_data = cur.fetchall()
         total_consumed = 0

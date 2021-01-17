@@ -62,7 +62,28 @@ def get_metrics():
     return db.get_metrics_db(device_id)
 ########################################
 
+########################################
+# GET API for user timer
+@api.route('/userTimer', methods=['GET'])
+def get_user_timer():
+    device_id = request.args['deviceid']
+    return db.get_user_time(device_id)
+########################################
+
+########################################
+# POST API for setting new time
+@api.route('/postNewTime', methods=['POST'])
+def update_user_timer():
+    if not request.json or not 'device_id' in request.json or not 'device_name' in request.json or not 'new_time' in request.json:
+        abort(400)
+    device_id = request.json['device_id']
+    device_name = request.json['device_name']
+    new_time = request.json['new_time']
+    return db.update_time(device_id, device_name, new_time)
+########################################
+
 if __name__ == "__main__":
     db.create_table_if_not_exist()
+    db.create_user_table_if_not_exist()
     api.run()
     
