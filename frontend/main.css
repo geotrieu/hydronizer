@@ -8,13 +8,6 @@ body {
     font-size: 20px;
 }
 
-.profile {
-    display: flex;
-    align-content: center;
-    flex-direction: row;
-    transform: translateX(-100%);
-    transition: transform 1s;
-}
 
 input {
     font-size: 15px;
@@ -27,29 +20,26 @@ form {
     padding-top: 30px;
 }
 
-.profile-open.profile {
-    transform: none;
-}
 
 .text1 {
     position: relative;
-    left: -24px;
+    left: -148px;
     width: 300px;
     padding: 150px;
-    font-size: 26px;
-    top: 70px;
+    font-size: 25px;
+    top: -40px;
 }
 
-.text2 {
+.time {
     position: relative;
-    font-size: 150px;
-    left: 97px;
-    top: -200px;
+    font-size: 110px;
+    left: 22px;
+    top: -290px; 
 }
 
 .frequency-button {
     position: absolute;
-    left: 340px;
+    left: 60px;
     width: 300px;
     height: 80px;
     padding: 5px;
@@ -57,23 +47,23 @@ form {
     border: none;
     border-radius: 20px;
     background-color: #70B9EE;
-    top: 700px;
+    top: 490px;
 }
 
 .logo {
     position: absolute;
-    width: 130px;
-    height: 130px;
-    left: 420px;
-    top: 260px;
+    width: 100px;
+    height: 100px;
+    left: 165px;
+    top: 150px;
 }
 
 .box {
     border: 3px solid lightgray;
-    width: 550px;
-    height: 680px;
+    width: 300px;
+    height: 450px;
     padding: 10px;
-    margin-top: 100px;
-    margin-left: 200px;
+    margin-top: 50px;
+    margin-left: 40px;
     background-color: #f4f1f1;
 }
