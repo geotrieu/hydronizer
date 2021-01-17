@@ -1,0 +1,38 @@
+.NavbarItems {
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+}
+
+.navbar-logo {
+    color: rgb(0, 0, 0);
+    width: 25%;
+    padding: 10px;
+    margin: auto;
+    cursor: pointer;
+    object-fit: fill;
+}
+
+.logo {
+    height: 60px;
+    width: 60px;
+    justify-content: left;
+}
+
+.fa-react {
+    margin-left: 0.5rem;
+    font-size: 1.6rem;
+}
+
+.nav-menu {
+    display: grid;
+    grid-template-columns: repeat(5,auto);
+    grid-gap: 10px;
+    list-style: none;
+    text-align: center;
+    width: 70vw;
+    justify-content: end;
+    margin-right: 2rem;
+}
