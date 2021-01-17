@@ -36,7 +36,7 @@ def on_message(client, userdata, message):
 # GET API for last water break
 @api.route('/lastwaterbreak', methods=['GET'])
 def get_companies():
-  return json.dumps(getLastEntry())
+  return getLastEntry()
 ########################################
 
 def create_entry(message_id, time_sent, weight):
@@ -85,7 +85,7 @@ def test_retry_loop(conn):
 def getQuantity(device):
     with global_conn.cursor() as cur:
         cur.execute(
-            "SELECT * FROM water_breaks WHERE deviceid = '" + device +"' ORDER BY id DESC LIMIT 1;"
+            "SELECT * FROM water_breaks WHERE deviceid = '" + device + "' ORDER BY id DESC LIMIT 1;"
         )
         rows = cur.fetchall()
         lastQuantity = int(rows[0][4])
