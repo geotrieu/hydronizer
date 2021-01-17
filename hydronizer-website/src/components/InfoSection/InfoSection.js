@@ -10,7 +10,8 @@ class InfoSection extends Component {
         waterLeft: "---",
         numSips: "---",
         waterDrankTotal: "---",
-        waterDrankToday: "---"
+        waterDrankToday: "---",
+        goalRemaining: "---"
     }
 
     async componentDidMount() {
@@ -28,16 +29,18 @@ class InfoSection extends Component {
         this.setState({numSips: metrics.number_of_sips});
         this.setState({waterDrankTotal: metrics.total_consumed});
         this.setState({waterDrankToday: metrics.total_consumed_today});
+        this.setState({goalRemaining: metrics.amount_left});
     }
 
     render() {
-        let { waterLeft, numSips, waterDrankToday, waterDrankTotal } = this.state;
+        let { waterLeft, numSips, waterDrankToday, waterDrankTotal, goalRemaining } = this.state;
         return (
             <div className="grid-container">
                 <div className="Image-1"><img src={img1} alt="Bottle"/></div>
                 <div className="Image-2"><img src={img2} alt="Bottle"/>
                     <h1>{waterDrankToday / 1000} L</h1>
                     <h2>of Water Drank Today</h2>
+                    <h3>{goalRemaining / 1000} L till 2 L daily goal. </h3>
                 </div>
                 <div className="Info">
                     <medium> The human body is 60% water,

@@ -4,6 +4,8 @@ connection.h*
 # Cockroach
 cockroach\
 *.zip
+*.pem
+*.crx
 
 # Logs
 logs

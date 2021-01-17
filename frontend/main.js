@@ -3,6 +3,7 @@ let t = 30 * 60;
 const device = 5843862085612977;
 
 let currentMessageId = 0;
+let blurred = false;
 const countdown = document.getElementById('countdown');
 
 function getLastWaterBreak() {
@@ -45,7 +46,14 @@ async function updateCountdown() {
         chrome.tabs.executeScript({
             code: 'document.getElementsByTagName("BODY")[0].style.filter = "blur(10px)"'
         });
-        alert("DRINK");
+        if (!blurred) {
+            alert("The time is up. Please drink some water :)");
+            blurred = true;
+        }
+    } else if (blurred) {
+        chrome.tabs.executeScript({
+            code: 'document.getElementsByTagName("BODY")[0].style.filter = ""'
+        });
     }
     const m = Math.floor(t/60);
 
