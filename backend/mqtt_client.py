@@ -6,7 +6,9 @@ import json
 import random
 from datetime import datetime
 from argparse import ArgumentParser, RawTextHelpFormatter
+
 from flask import Flask, request, json
+from flask_cors import CORS, cross_origin
 
 import psycopg2
 from psycopg2.errors import SerializationFailure
@@ -14,6 +16,7 @@ from psycopg2.errors import SerializationFailure
 import threading
 
 api = Flask(__name__)
+CORS(api)
 global_conn = None
 
 #######################################
@@ -35,6 +38,7 @@ def on_message(client, userdata, message):
 ########################################
 # GET API for last water break
 @api.route('/lastwaterbreak', methods=['GET'])
+
 def get_last_water_break():
     device_id = request.args['arg1']
     return getLastEntry(device_id)
@@ -47,14 +51,14 @@ def get_last_water_break():
 def get_metrics():
     device_id = request.args['arg1']
     return getMetrics(device_id)
-########################################
+
 
 def create_entry(message_id, time_sent, weight):
     with global_conn.cursor() as cur:
         cur.execute(
             "CREATE TABLE IF NOT EXISTS water_breaks (id SERIAL PRIMARY KEY, deviceID STRING, date DATE, time TIME, quantity INT)"
         )
-        quantity = getQuantity()
+        quantity = getQuantity(message_id)
         command = "INSERT INTO water_breaks (deviceID, date, time, quantity) VALUES (%s, %s, %s, %s)"
         formatted_date = datetime.now().strftime('%Y-%m-%d')
         formatted_time = datetime.now().strftime('%H:%M:%S')
@@ -92,10 +96,10 @@ def test_retry_loop(conn):
         cur.execute("SELECT crdb_internal.force_retry('1s'::INTERVAL)")
     logging.debug("test_retry_loop(): status message: %s", cur.statusmessage)
 
-def getQuantity():
+def getQuantity(device):
     with global_conn.cursor() as cur:
         cur.execute(
-            "SELECT * FROM water_breaks WHERE deviceid = '54kilrgk5x909u4n' ORDER BY id DESC LIMIT 1;"
+            "SELECT * FROM water_breaks WHERE deviceid = '" + device + "' ORDER BY id DESC LIMIT 1;"
         )
         rows = cur.fetchall()
         lastQuantity = int(rows[0][4])
@@ -167,6 +171,7 @@ def getMetrics(device_id):
 def main():
     opt = parse_cmdline()
     logging.basicConfig(level=logging.DEBUG if opt.verbose else logging.INFO)
+    logging.getLogger('flask_cors').level = logging.DEBUG
     conn = psycopg2.connect(opt.dsn)
     global global_conn
     global_conn = conn
@@ -185,7 +190,7 @@ def main():
     client.connect(broker_address) #connect to broker
     print("Subscribing to topic","hydronizer/reports")
     client.subscribe("hydronizer/reports")
-    #client.loop_forever()
+    client.loop_forever()
     #print("Publishing message to topic","hydronizer/reports")
     #client.publish("hydronizer/reports",'{"id":"5843862085612977","weight":500}')
     time.sleep(30) # wait
