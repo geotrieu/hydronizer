@@ -6,10 +6,14 @@ import json
 import random
 from datetime import datetime
 from argparse import ArgumentParser, RawTextHelpFormatter
+from flask import Flask, json
 
 import psycopg2
 from psycopg2.errors import SerializationFailure
 
+import threading
+
+api = Flask(__name__)
 global_conn = None
 
 #######################################
@@ -28,9 +32,14 @@ def on_message(client, userdata, message):
     print("message retain flag=", message.retain)
 ########################################
 
-def create_entry(message_id, time_sent, weight):
+########################################
+# GET API for last water break
+@api.route('/lastwaterbreak', methods=['GET'])
+def get_companies():
+  return json.dumps(getLastEntry())
+########################################
 
-    type(global_conn)
+def create_entry(message_id, time_sent, weight):
     with global_conn.cursor() as cur:
         cur.execute(
             "CREATE TABLE IF NOT EXISTS water_breaks (id SERIAL PRIMARY KEY, deviceID STRING, date DATE, time TIME, quantity INT)"
@@ -74,7 +83,6 @@ def test_retry_loop(conn):
     logging.debug("test_retry_loop(): status message: %s", cur.statusmessage)
 
 def getQuantity():
-    type(global_conn)
     with global_conn.cursor() as cur:
         cur.execute(
             "SELECT * FROM water_breaks WHERE deviceid = '54kilrgk5x909u4n' ORDER BY id DESC LIMIT 1;"
@@ -84,6 +92,25 @@ def getQuantity():
         return lastQuantity - random.randrange(30,51)
     global_conn.commit()
 
+def getLastEntry():
+    with global_conn.cursor() as cur:
+        cur.execute(
+            "SELECT * FROM water_breaks ORDER BY ID DESC LIMIT 1"
+        )
+        row = cur.fetchall()[0]
+
+        last_entry = {
+            "message_id": row[0],
+            "device_id": row[1],
+            "date": row[2].strftime("%Y-%m-%d"),
+            "time": row[3].strftime("%H:%M:%S"),
+            "quantity": row[4]
+        }
+
+        print(last_entry)
+        print(type(last_entry))
+    global_conn.commit()
+    return last_entry
 
 def main():
     opt = parse_cmdline()
@@ -106,14 +133,11 @@ def main():
     client.connect(broker_address) #connect to broker
     print("Subscribing to topic","hydronizer/reports")
     client.subscribe("hydronizer/reports")
-    client.loop_forever()
+    #client.loop_forever()
     #print("Publishing message to topic","hydronizer/reports")
     #client.publish("hydronizer/reports",'{"id":"5843862085612977","weight":500}')
-    #time.sleep(20) # wait
+    time.sleep(30) # wait
     #client.loop_stop() #stop the loop
-
-    #print_breaks(conn)
-
     #delete_entries(conn)
 
     # Close communication with the database.
@@ -139,5 +163,11 @@ def parse_cmdline():
 
 
 if __name__ == "__main__":
-    main()
+    thread1 = threading.Thread(target = main, args = ())
+    thread2 = threading.Thread(target = api.run, args = ())
+
+    thread1.start()
+    thread2.start()
+    #main()
+    #api.run()
     
