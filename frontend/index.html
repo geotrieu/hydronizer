@@ -24,16 +24,23 @@
                 </form> 
             </div> -->
 
-            <div class="box">
-                <p class="text1">
-                    Time until next water break
-                </p>           
-                <img class="logo" src="image1.png">
-                <button class="frequency-button">
-                    Set water break frequency 
-                </button>
-                <!-- <p class="time">05:19</p>   -->
-            </div>
+        <div class="box">
+            <p class="text1">
+                Time until next water break
+            </p>           
+            <img class="logo" src="image1.png">
+            <ul class="userIn">
+                <li><input type="number" id="hours" min="0" max="23"></li>
+                <li><small>hours</small></li>
+                <li><input type="number" id="minutes" min="0" max="59"></li>
+                <li><small>minutes</small></li>
+            </ul>
+            <button id="set" type="button" class="frequency-button">
+                Set Water Break Frequency 
+            </button>
+                 
+
+            <!-- <p class="time">05:19</p>   -->
         </div>
     </body>
 </html>

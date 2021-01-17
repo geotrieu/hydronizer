@@ -78,3 +78,9 @@ body {
     left: 140px;
     top: 450px;
 }
+
+.userIn li {
+    display: inline;
+    float:left;
+    padding: 1px;
+}

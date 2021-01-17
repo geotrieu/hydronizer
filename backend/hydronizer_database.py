@@ -61,16 +61,16 @@ def get_user_time(device_id):
     create_user_table_if_not_exist()
     with conn.cursor() as cur:
         cur.execute(
-            "SELECT * FROM users WHERE deviceid = '" + device_id + "';"
+            "SELECT * FROM users WHERE deviceID = '" + device_id + "';"
         )
         rows = cur.fetchall()
 
         if len(rows) == 0:
             print(rows)
             create_user(device_id, device_id, 1800)
-            return {"deviceid": device_id, "devicename": device_id,"time": 1800}
+            return {"device_id": device_id, "device_name": device_id,"timer": 1800}
 
-        return {"deviceid": device_id, "devicename": rows[0][1],"time": rows[0][2]}
+        return {"device_id": device_id, "device_name": rows[0][1],"timer": rows[0][2]}
     conn.commit()
 
 def create_entry(message_id, time_sent, weight):

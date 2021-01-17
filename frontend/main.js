@@ -1,10 +1,27 @@
 let t = 30 * 60;
 
+function setTime() {
+    var hours = document.getElementById("hours");
+    var minutes = document.getElementById("minutes");
+    if (hours && minutes) {
+        t = hours * 60 + minutes
+    }
+}
+    
+
+const el = document.getElementById("set")
+if (el){
+    el.addEventListener('click', setTime);
+}
+
+
 const device = 5843862085612977;
 
 let currentMessageId = 0;
 let blurred = false;
 const countdown = document.getElementById('countdown');
+
+
 
 function getLastWaterBreak() {
     return fetch(`http://localhost:5000/lastwaterbreak?deviceid=${device}`);
