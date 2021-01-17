@@ -12,12 +12,11 @@ void connectWifi() {
   Serial.println("Connected to the WiFi network!");
 
   Serial.println("Connecting to MQTT Network");
-  if ((mqtt.connect()) != 0) {
+  while ((mqtt.connect()) != 0) {
     mqtt.disconnect();
     Serial.println("MQTT Failed!");
-  } else {
-    Serial.println("MQTT Connected!");
   }
+  Serial.println("MQTT Connected!");
 
   Serial.println("\nConnected to MQTT!");
 }

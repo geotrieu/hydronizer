@@ -1,0 +1,16 @@
+{
+    "name" : "Hydronizer",
+    "version" : "1.0",
+    "description" : "chrome extension",
+    "manifest_version" : 2,
+    "incognito" : "split",
+
+    "permissions" : [ "activeTab" ],
+    "icons" : {"128" : "image1.png"},
+    
+    "browser_action" : {
+        "default_icon" : "image1.png",
+        "default_popup" : "index.html",
+        "default_title" : "Hydronizer Extension"
+    }
+}
