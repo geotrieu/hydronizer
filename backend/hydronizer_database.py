@@ -6,12 +6,12 @@ conn = __import__('settings').global_conn
 
 def create_table_if_not_exist():
     with conn.cursor() as cur:
-        cur.execute("CREATE TABLE IF NOT EXISTS water_breaks (id SERIAL PRIMARY KEY, deviceID STRING, date DATE, time TIME, quantity INT, drank INT)")
+        cur.execute("CREATE TABLE IF NOT EXISTS water_breaks (id SERIAL PRIMARY KEY, deviceID TEXT, date DATE, time TIME, quantity INT, drank INT)")
     conn.commit()
 
 def create_user_table_if_not_exist():
     with conn.cursor() as cur:
-        cur.execute("CREATE TABLE IF NOT EXISTS users (deviceID STRING PRIMARY KEY, deviceName STRING, timer INT)")
+        cur.execute("CREATE TABLE IF NOT EXISTS users (deviceID TEXT PRIMARY KEY, deviceName TEXT, timer INT)")
     conn.commit()
 
 def update_time(device_id, device_name, new_time):
@@ -34,6 +34,7 @@ def update_time(device_id, device_name, new_time):
     return {"device_id": device_name, "device_name": device_name, "timer": new_time}
 
 def create_user(device_id, device_name, new_time):
+    create_user_table_if_not_exist()
     with conn.cursor() as cur:
         cur.execute(
             "INSERT INTO users (deviceID, deviceName, timer) VALUES ('" + device_id + "', '" + device_name + "', " + str(new_time) + ");"
@@ -41,6 +42,7 @@ def create_user(device_id, device_name, new_time):
     conn.commit()
 
 def get_user_time(device_id):
+    create_user_table_if_not_exist()
     with conn.cursor() as cur:
         cur.execute(
             "SELECT * FROM users WHERE deviceid = '" + device_id + "';"
