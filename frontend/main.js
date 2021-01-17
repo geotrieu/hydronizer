@@ -1,5 +1,4 @@
-const start = 30;
-let t = start * 60;
+let t = 30 * 60;
 
 const device = 5843862085612977;
 
@@ -10,35 +9,36 @@ function getLastWaterBreak() {
     return fetch(`http://localhost:5000/lastwaterbreak?deviceid=${device}`);
 }
 
+function getTimeToDrink() {
+    return fetch(`http://localhost:5000/userTimer?deviceid=${device}`);
+}
+
+async function calculateTimeToDrink() {
+    let res = await getTimeToDrink();
+    let data = await res.json();
+    return data.time;
+}
+
 async function calculateTime() {
     let res = await getLastWaterBreak();
     let data = await res.json();
-    console.log(currentMessageId);
     if (data.message_id == currentMessageId) return -1;
     let date = data.date;
     let time = data.time;
     let dateTime = Date.parse(date + " " + time);
     let differenceSeconds = Math.ceil((Date.now() - dateTime) / 1000);
+    console.log(differenceSeconds);
     currentMessageId = data.message_id;
-    console.log("dS:" + differenceSeconds)
     return differenceSeconds;
 }
 
 setInterval(updateCountdown, 1000);
 
-chrome.runtime.onMessage.addListener(
-    function(message, callback) {
-      if (message == "changeColor"){
-        chrome.tabs.executeScript({
-          code: 'document.body.style.backgroundColor="orange"'
-        });
-      }
-    });
-
 async function updateCountdown() {
     let elapsedTimeSinceDrink = await calculateTime();
-    if (elapsedTimeSinceDrink != -1) { // use cached message, message never changed
-        t = start * 60 - elapsedTimeSinceDrink;
+    if (elapsedTimeSinceDrink != -1) { // message changed
+        let timeToDrink = await calculateTimeToDrink();
+        t = timeToDrink - elapsedTimeSinceDrink;
     }
     if (t < 0) {
         t = 0;
