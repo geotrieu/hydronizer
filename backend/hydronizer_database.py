@@ -31,7 +31,7 @@ def update_time(device_id, device_name, new_time):
             )
         conn.commit()
     
-    return {"device_id": device_name, "device_name": device_name, "timer": new_time}
+    return {"device_id": device_id, "device_name": device_name, "timer": new_time}
 
 def create_user(device_id, device_name, new_time):
     create_user_table_if_not_exist()
