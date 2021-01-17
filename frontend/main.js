@@ -26,6 +26,15 @@ async function calculateTime() {
 
 setInterval(updateCountdown, 1000);
 
+chrome.runtime.onMessage.addListener(
+    function(message, callback) {
+      if (message == "changeColor"){
+        chrome.tabs.executeScript({
+          code: 'document.body.style.backgroundColor="orange"'
+        });
+      }
+    });
+
 async function updateCountdown() {
     let elapsedTimeSinceDrink = await calculateTime();
     if (elapsedTimeSinceDrink != -1) { // use cached message, message never changed

@@ -6,7 +6,7 @@ conn = __import__('settings').global_conn
 
 def create_table_if_not_exist():
     with conn.cursor() as cur:
-        cur.execute("CREATE TABLE IF NOT EXISTS water_breaks (id SERIAL PRIMARY KEY, deviceID STRING, date DATE, time INT, quantity INT)")
+        cur.execute("CREATE TABLE IF NOT EXISTS water_breaks (id SERIAL PRIMARY KEY, deviceID STRING, date DATE, time TIME, quantity INT, drank INT)")
     conn.commit()
 
 def create_user_table_if_not_exist():
@@ -23,11 +23,7 @@ def update_time(device_id, device_name, new_time):
     conn.commit()
 
     if len(row) == 0:
-        with conn.cursor() as cur:
-            cur.execute(
-                "INSERT INTO users (deviceID, deviceName, timer) VALUES ('" + device_id + "', '" + device_name + "', " + str(new_time) + ");"
-            )      
-        conn.commit()
+        create_user(device_id, device_name, new_time)
     else:
         with conn.cursor() as cur:
             cur.execute(
@@ -37,58 +33,55 @@ def update_time(device_id, device_name, new_time):
     
     return {"device_id": device_name, "device_name": device_name, "timer": new_time}
 
+def create_user(device_id, device_name, new_time):
+    with conn.cursor() as cur:
+        cur.execute(
+            "INSERT INTO users (deviceID, deviceName, timer) VALUES ('" + device_id + "', '" + device_name + "', " + str(new_time) + ");"
+        )      
+    conn.commit()
+
 def get_user_time(device_id):
     with conn.cursor() as cur:
         cur.execute(
             "SELECT * FROM users WHERE deviceid = '" + device_id + "';"
         )
-        row = cur.fetchall()
+        rows = cur.fetchall()
 
-        if len(row) == 0:
-            return -1
+        if len(rows) == 0:
+            print(rows)
+            create_user(device_id, device_id, 1800)
+            return {"deviceid": device_id, "devicename": device_id,"time": 1800}
 
-        time = row[1]
-        return time
+        return {"deviceid": device_id, "devicename": rows[0][1],"time": rows[0][2]}
     conn.commit()
 
 def create_entry(message_id, time_sent, weight):
+    create_table_if_not_exist()
     with conn.cursor() as cur:
-        create_table_if_not_exist()
-        quantity = get_quantity(message_id)
-        command = "INSERT INTO water_breaks (deviceID, date, time, quantity) VALUES (%s, %s, %s, %s)"
+        quantities = get_quantities(message_id)
+        command = "INSERT INTO water_breaks (deviceID, date, time, quantity, drank) VALUES (%s, %s, %s, %s, %s)"
         formatted_date = datetime.now().strftime('%Y-%m-%d')
         formatted_time = datetime.now().strftime('%H:%M:%S')
-        cur.execute(command, (message_id, formatted_date, formatted_time, quantity))
+        cur.execute(command, (message_id, formatted_date, formatted_time, quantities[0], quantities[1]))
         logging.debug("create_entry(): status message: %s", cur.statusmessage)
     conn.commit()
 
-def delete_entries():
-    with conn.cursor() as cur:
-        cur.execute("DELETE FROM hydronizer.water_breaks")
-        logging.debug("delete_entries(): status message: %s", cur.statusmessage)
-    conn.commit()
-
-def print_breaks():
-    with conn.cursor() as cur:
-        cur.execute("SELECT id, time, quantity FROM water_breaks")
-        logging.debug("print_breaks(): status message: %s", cur.statusmessage)
-        rows = cur.fetchall()
-        conn.commit()
-        print(f"Breaks at {time.asctime()}:")
-        for row in rows:
-            print(row)
-
-def get_quantity(device):
+def get_quantities(device):
+    create_table_if_not_exist()
     with conn.cursor() as cur:
         cur.execute(
             "SELECT * FROM water_breaks WHERE deviceid = '" + device + "' ORDER BY id DESC LIMIT 1;"
         )
         rows = cur.fetchall()
+        if (len(rows) == 0): # New Water Bottle
+            return [1500, 0]
         lastQuantity = int(rows[0][4])
-        return lastQuantity - random.randrange(30,51)
+        drank = random.randrange(30,51)
+        return [lastQuantity - drank, drank]
     conn.commit()
 
 def get_last_entry(device_id):
+    create_table_if_not_exist()
     with conn.cursor() as cur:
         command = "SELECT * FROM water_breaks WHERE deviceid = '{}' ORDER BY id DESC LIMIT 1;".format(device_id)
         print(type(command))
@@ -110,6 +103,7 @@ def get_last_entry(device_id):
     return last_entry
 
 def get_metrics_db(device_id):
+    create_table_if_not_exist()
     # returns number of sips from today, total water consumed, average, amount of water you need to 
     with conn.cursor() as cur:
         formatted_date = datetime.now().strftime('%Y-%m-%d')
@@ -124,8 +118,7 @@ def get_metrics_db(device_id):
 
     total_today = 0
     for row in data_today:
-        total_today += row[4]
-    
+        total_today += row[5]
 
     DAILY_RECOMMENDED = 2000
     amount_left = DAILY_RECOMMENDED - total_today
@@ -138,7 +131,7 @@ def get_metrics_db(device_id):
         all_data = cur.fetchall()
         total_consumed = 0
         for row in all_data:
-            total_consumed += row[4]
+            total_consumed += row[5]
     conn.commit()
 
     metrics = {
