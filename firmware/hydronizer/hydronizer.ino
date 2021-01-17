@@ -107,12 +107,12 @@ void loop() {
       mqtt_reports.publish(resultChar);
 
       if (hydro_id[1] == '8') {
-        deviceName == "Bottle";
+        deviceName = "Bottle";
       } else if (hydro_id[1] == '4') {
-        deviceName == "Mug";
+        deviceName = "Mug";
       } else {
         Serial.println(hydro_id[1]);
-        deviceName == "";
+        deviceName = "";
       }
     }
   
@@ -158,6 +158,7 @@ void oledDrawText(String text, String bottom) {
     display.write(text[i]);
   }
 
+  display.setTextSize(3);
   display.setCursor(0, 32);
   for(int i=0; i<bottom.length(); i++) {
     display.write(bottom[i]);
