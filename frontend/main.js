@@ -40,12 +40,12 @@ async function updateCountdown() {
         let timeToDrink = await calculateTimeToDrink();
         t = timeToDrink - elapsedTimeSinceDrink;
     }
-    if (t < 0) {
+    if (t <= 0) {
         t = 0;
-        alert("DRINK");
         chrome.tabs.executeScript({
             code: 'document.getElementsByTagName("BODY")[0].style.filter = "blur(10px)"'
         });
+        alert("DRINK");
     }
     const m = Math.floor(t/60);
 
