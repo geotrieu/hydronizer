@@ -1,6 +1,8 @@
 # Hydronizer
-An intelligent addition to any water bottle to increase daily water intake
+An intelligent addition to any water bottle to increase daily water intake.
+Submission for Hack The North 2020 ++
 
+https://devpost.com/software/hydronizer-qyb03m
 https://youtu.be/uOv5yZM5v3Y
 
 ![physical](https://i.imgur.com/3hPBUsF.png "Physical Layout")
