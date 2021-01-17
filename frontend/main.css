@@ -4,6 +4,16 @@ body {
     margin-left: 30px;
     margin-right: 30px;
 }
+
+html,
+body {
+    overflow-y: hidden;
+}
+
+html::-webkit-scrollbar {
+    display: none;
+}
+
 .h1Tag {
     text-align: center;
     color: black;

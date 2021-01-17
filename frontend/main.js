@@ -17,7 +17,7 @@ if (el){
 }
 
 
-const device = "5843862085612977";
+let device = "5843862085612977";
 
 let currentMessageId = 0;
 let blurred = false;
