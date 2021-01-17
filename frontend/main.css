@@ -1,5 +1,6 @@
 body {
     background-color: #f4f1f1;
+    overflow: hidden;
 }
 .h1Tag {
     text-align: center;
@@ -9,16 +10,16 @@ body {
 }
 
 
-input {
+/*input {
     font-size: 15px;
     width: 175px;
     height: 30px;
-}
+}*/
 
 
-form {
+/*form {
     padding-top: 30px;
-}
+} */
 
 
 .text1 {
@@ -43,11 +44,12 @@ form {
     width: 300px;
     height: 80px;
     padding: 5px;
-    font-size: 25px;
+    font-size: 20px;
     border: none;
     border-radius: 20px;
-    background-color: #70B9EE;
+    background-color:#c8e6f9;
     top: 650px;
+    font-family: "Segoe UI", Tahoma, sans-serif;
 }
 
 .frequency-button:hover {
