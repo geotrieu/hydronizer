@@ -7,7 +7,7 @@ import img3 from './image-3.JPG'
 import img4 from './image-4.JPG'
 class InfoSection extends Component {
     state = {
-        waterQuantity: 0
+        waterQuantity: "---"
     }
 
     async componentDidMount() {
@@ -15,8 +15,8 @@ class InfoSection extends Component {
     }
 
     async getWaterQuantity() {
-        let waterQuantity = await getLastWaterBreak();
-        this.setState({waterQuantity});
+        let {data: lastWaterBreak} = await getLastWaterBreak();
+        this.setState({waterQuantity: lastWaterBreak.quantity});
     }
 
     render() {
@@ -41,8 +41,8 @@ class InfoSection extends Component {
                     <small>10</small>
                     <h3>Average Daily Water Consumption</h3>
                     <small>1.5L</small>
-                    <h3>Water left in Water Bottle</h3>
-                    <small>{waterQuantity}</small>
+                    <h3>Water Left in Water Bottle</h3>
+                    <small>{waterQuantity} mL</small>
                 </div>
                 <div className="Image-3"><img src={img3} alt="Bottle"/></div>
                 <div className="Image-4"><img src={img4} alt="Bottle"/></div>
